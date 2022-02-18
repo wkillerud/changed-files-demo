@@ -1,0 +1,42 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Make a new file in an existing directory
+        run: touch packages/existing/__image_snapshots__/new.txt
+
+      - name: Make a new directory with a file
+        run: mkdirp packages/new/__image_snapshots__ && touch packages/new/__image_snapshots__/new.txt
+
+      - name: Look for changed files
+        uses: wkillerud/changed-files@1.0.0
+        id: lfcf
+        with:
+          # See the micromatch docs for more examples: https://github.com/micromatch/micromatch#matching-features
+          patterns: |
+            **/__image_snapshots__/*
+            **/new.txt
+
+      - name: Upload changed files
+        if: steps.lfcf.outputs.has_changed_files == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: changed-files
+          # GitHub will find the lowest common folder to reduce the number of folders
+          # in the uploaded artifact. If you want to preserve the same folder structure
+          # as in your repository when downloading the artifact, include a file from
+          # the root of your repository.
+          path: |
+            package.json
+            ${{ steps.lfcf.outputs.changed_files }}
