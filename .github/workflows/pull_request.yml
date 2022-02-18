@@ -17,7 +17,7 @@ jobs:
         run: touch packages/existing/__image_snapshots__/new.txt
 
       - name: Make a new directory with a file
-        run: mkdirp packages/new/__image_snapshots__ && touch packages/new/__image_snapshots__/new.txt
+        run: mkdir -p packages/new/__image_snapshots__ && touch packages/new/__image_snapshots__/new.txt
 
       - name: Look for changed files
         uses: wkillerud/changed-files@1.0.0
